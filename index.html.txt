@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Portfolio - Juliana Silva</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter (Mirip dengan referensi) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Konfigurasi Tailwind Custom Theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            DEFAULT: '#86B393', // Warna hijau sage dari referensi
+                            dark: '#5C8A6A',
+                            light: '#E8F0EA'
+                        },
+                        offwhite: '#FAFAFA'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom CSS untuk efek Mesh Gradient */
+        .mesh-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            filter: blur(100px);
+            opacity: 0.6;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            width: 50vw;
+            height: 50vw;
+            background: rgba(167, 243, 208, 0.5); /* Soft Green */
+            top: -10%;
+            right: -10%;
+        }
+
+        .blob-2 {
+            width: 40vw;
+            height: 40vw;
+            background: rgba(254, 215, 170, 0.4); /* Soft Orange/Peach */
+            top: 20%;
+            right: 15%;
+            animation-delay: -2s;
+        }
+
+        .blob-3 {
+            width: 45vw;
+            height: 45vw;
+            background: rgba(191, 219, 254, 0.4); /* Soft Blue */
+            bottom: -10%;
+            left: 20%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+
+        /* Animasi Fade In saat scroll */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-offwhite text-gray-800 font-sans antialiased selection:bg-brand selection:text-white relative">
+
+    <!-- Background Mesh Gradient -->
+    <div class="mesh-gradient">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navigasi -->
+    <nav class="fixed w-full top-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-xl font-bold tracking-tighter text-brand">JULIANA SILVA</a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-500">
+                <a href="#about" class="hover:text-brand transition-colors">About</a>
+                <a href="#projects" class="hover:text-brand transition-colors">Projects</a>
+                <a href="#skills" class="hover:text-brand transition-colors">Skills</a>
+                <a href="#contact" class="hover:text-brand transition-colors">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-500 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-gray-100">
+            <div class="flex flex-col px-6 py-4 space-y-4 text-sm font-medium text-gray-500">
+                <a href="#about" class="mobile-link hover:text-brand">About</a>
+                <a href="#projects" class="mobile-link hover:text-brand">Projects</a>
+                <a href="#skills" class="mobile-link hover:text-brand">Skills</a>
+                <a href="#contact" class="mobile-link hover:text-brand">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center pt-20">
+        <div class="max-w-6xl mx-auto px-6 w-full">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12">
+                <p class="text-brand font-semibold tracking-widest text-xs md:text-sm uppercase mb-4 md:mb-0">By Juliana Silva</p>
+                <p class="text-brand font-semibold tracking-widest text-xs md:text-sm uppercase">Presentation Template / Portfolio</p>
+            </div>
+            
+            <h1 class="text-[15vw] md:text-[8rem] lg:text-[10rem] leading-[0.85] font-bold text-brand tracking-tighter mb-12">
+                CREATIVE<br>PORTFOLIO
+            </h1>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 gap-6">
+                <div class="text-gray-500 text-sm font-medium">
+                    <p>+123-456-7890</p>
+                    <p>hello@julianasilva.com</p>
+                </div>
+                
+                <a href="#projects" class="bg-brand text-white px-8 py-4 rounded-full font-semibold hover:bg-brand-dark transition-all transform hover:scale-105 shadow-lg shadow-brand/30 flex items-center gap-2">
+                    View My Work
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                </a>
+
+                <div class="text-gray-500 text-sm font-medium">
+                    <p>@reallygreatsite</p>
+                    <p>Jakarta, Indonesia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white/50 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-6 fade-in">
+            <h2 class="text-sm font-semibold tracking-widest text-brand uppercase mb-8">About Me</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <h3 class="text-3xl md:text-5xl font-bold leading-tight text-gray-900">
+                    I build digital experiences that are clean, functional, and aesthetically pleasing.
+                </h3>
+                <div class="space-y-6 text-gray-600 text-lg">
+                    <p>
+                        Halo! Saya Juliana, seorang Frontend Developer dan UI/UX Designer dengan pengalaman lebih dari 3 tahun. Saya percaya bahwa desain yang baik bukan hanya tentang tampilan yang cantik, tetapi juga tentang bagaimana pengguna berinteraksi dengan produk tersebut.
+                    </p>
+                    <p>
+                        Saya sangat menyukai estetika minimalis, tipografi yang tebal, dan tata letak yang bersih. Ketika tidak sedang ngoding, saya biasanya menghabiskan waktu untuk eksplorasi desain, fotografi, atau sekadar menikmati kopi.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24">
+        <div class="max-w-6xl mx-auto px-6 fade-in">
+            <div class="flex justify-between items-end mb-12">
+                <h2 class="text-sm font-semibold tracking-widest text-brand uppercase">Selected Works</h2>
+                <a href="#" class="text-sm text-gray-500 hover:text-brand underline decoration-1 underline-offset-4 hidden md:block">View GitHub</a>
+            </div>
+
+            <!-- Grid Projects -->
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- Project Card 1 -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:shadow-2xl hover:shadow-brand/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-full h-48 bg-brand-light rounded-2xl mb-6 overflow-hidden relative">
+                            <!-- Placeholder Image/Gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-tr from-brand/20 to-transparent"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">E-Commerce Platform</h3>
+                        <p class="text-gray-600 mb-6 text-sm leading-relaxed">Membangun antarmuka toko online modern dengan fitur keranjang belanja dinamis, filter produk, dan integrasi payment gateway.</p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">React.js</span>
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">Tailwind</span>
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">Stripe</span>
+                        </div>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm font-semibold text-gray-900 hover:text-brand flex items-center gap-1">Live Demo <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>
+                            <a href="#" class="text-sm font-semibold text-gray-400 hover:text-gray-900 flex items-center gap-1">GitHub <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="group bg-white rounded-3xl p-8 border border-gray-100 hover:shadow-2xl hover:shadow-brand/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-full h-48 bg-gray-100 rounded-2xl mb-6 overflow-hidden relative">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-gray-300/30 to-transparent"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">SaaS Dashboard UI</h3>
+                        <p class="text-gray-600 mb-6 text-sm leading-relaxed">Desain ulang dan implementasi antarmuka dashboard analitik untuk perusahaan SaaS, berfokus pada keterbacaan data dan UX yang mulus.</p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">Vue.js</span>
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">Figma</span>
+                            <span class="text-xs font-semibold text-brand bg-brand-light px-3 py-1 rounded-full">Chart.js</span>
+                        </div>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm font-semibold text-gray-900 hover:text-brand flex items-center gap-1">Live Demo <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>
+                            <a href="#" class="text-sm font-semibold text-gray-400 hover:text-gray-900 flex items-center gap-1">GitHub <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-24 bg-brand text-white">
+        <div class="max-w-6xl mx-auto px-6 fade-in">
+            <h2 class="text-sm font-semibold tracking-widest text-white/70 uppercase mb-12">My Toolkit</h2>
+            
+            <div class="grid md:grid-cols-3 gap-12">
+                <!-- Kategori 1 -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 border-b border-white/20 pb-4">Frontend</h3>
+                    <ul class="space-y-3 text-white/80 font-medium">
+                        <li>HTML5 & CSS3</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>React.js & Next.js</li>
+                        <li>Tailwind CSS</li>
+                        <li>Vue.js</li>
+                    </ul>
+                </div>
+                <!-- Kategori 2 -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 border-b border-white/20 pb-4">Design</h3>
+                    <ul class="space-y-3 text-white/80 font-medium">
+                        <li>Figma</li>
+                        <li>UI/UX Design</li>
+                        <li>Wireframing & Prototyping</li>
+                        <li>Adobe Photoshop</li>
+                        <li>Typography & Color Theory</li>
+                    </ul>
+                </div>
+                <!-- Kategori 3 -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 border-b border-white/20 pb-4">Tools & Others</h3>
+                    <ul class="space-y-3 text-white/80 font-medium">
+                        <li>Git & GitHub</li>
+                        <li>RESTful APIs</li>
+                        <li>Responsive Design</li>
+                        <li>Vercel / Netlify</li>
+                        <li>Agile / Scrum</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24">
+        <div class="max-w-6xl mx-auto px-6 fade-in">
+            <div class="bg-white rounded-3xl p-8 md:p-16 border border-gray-100 shadow-xl shadow-gray-200/50 text-center md:text-left">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">Let's work<br>together.</h2>
+                        <p class="text-gray-600 mb-8">Punya proyek menarik atau sekadar ingin menyapa? Jangan ragu untuk menghubungi saya melalui form atau sosial media di samping.</p>
+                        
+                        <div class="flex flex-col space-y-3 text-gray-800 font-medium">
+                            <a href="mailto:hello@julianasilva.com" class="hover:text-brand transition-colors flex items-center justify-center md:justify-start gap-3">
+                                <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                hello@julianasilva.com
+                            </a>
+                            <a href="#" class="hover:text-brand transition-colors flex items-center justify-center md:justify-start gap-3">
+                                <svg class="w-5 h-5 text-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                linkedin.com/in/julianasilva
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Form Sederhana -->
+                    <form action="#" class="space-y-4">
+                        <div>
+                            <label for="name" class="sr-only">Nama</label>
+                            <input type="text" id="name" placeholder="Nama Anda" class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand bg-offwhite text-sm">
+                        </div>
+                        <div>
+                            <label for="email" class="sr-only">Email</label>
+                            <input type="email" id="email" placeholder="Email Anda" class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand bg-offwhite text-sm">
+                        </div>
+                        <div>
+                            <label for="message" class="sr-only">Pesan</label>
+                            <textarea id="message" rows="4" placeholder="Pesan Anda..." class="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand bg-offwhite text-sm resize-none"></textarea>
+                        </div>
+                        <button type="button" class="w-full bg-gray-900 text-white font-semibold py-4 rounded-xl hover:bg-brand transition-colors duration-300">
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-sm text-gray-400 border-t border-gray-100">
+        <p>&copy; 2024 Juliana Silva. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 1. Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Menutup menu mobile saat link diklik
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // 2. Scroll Animation (Fade In)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Mengamati semua elemen dengan class 'fade-in'
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIMA vs Machine Learning — BREN Stock Forecasting</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Mono:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Chart.js (Untuk Bar Chart RMSE & DM) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Mono"', 'monospace'],
+                        display: ['Bungee', 'cursive'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#D32F2F', 
+                            offwhite: '#F9F9F9', 
+                            dark: '#1A1A1A',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Paper Texture */
+        body {
+            background-color: #F9F9F9;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        /* Scientific Table */
+        .scientific-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
+            border: 2px solid #D32F2F;
+        }
+        .scientific-table th {
+            background-color: #D32F2F;
+            color: #F9F9F9;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .scientific-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(211, 47, 47, 0.2);
+            color: #1A1A1A;
+        }
+        .scientific-table tr:nth-child(even) {
+            background-color: rgba(211, 47, 47, 0.05);
+        }
+
+        /* Math Block */
+        .math-block {
+            font-family: 'Merriweather', serif;
+            font-style: italic;
+            background: rgba(211, 47, 47, 0.05);
+            padding: 1.5rem;
+            border-left: 4px solid #D32F2F;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-size: 1rem;
+            overflow-x: auto;
+        }
+
+        /* Drop Cap */
+        .drop-cap::first-letter {
+            font-family: 'Bungee', cursive;
+            float: left;
+            font-size: 3.5rem;
+            line-height: 0.8;
+            padding-right: 0.5rem;
+            padding-top: 0.5rem;
+            color: #D32F2F;
+        }
+
+        /* Custom List */
+        .custom-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .custom-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .custom-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #D32F2F;
+            font-weight: bold;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            padding: 1.5rem;
+            border: 2px solid #D32F2F;
+            border-radius: 1rem;
+            box-shadow: 4px 4px 0px 0px rgba(211, 47, 47, 0.2);
+        }
+
+        /* Slide-like Visualization Frame */
+        .slide-frame {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .slide-frame:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="text-brand-dark font-sans antialiased selection:bg-brand-red selection:text-white">
+
+    <!-- HEADER -->
+    <header class="border-b-4 border-brand-red bg-brand-offwhite pt-16 pb-12 px-6 md:px-12 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="flex justify-between items-start mb-8">
+                <div class="text-xs font-bold tracking-widest uppercase text-brand-red">Seminar Nasional Statistika XIV (2026)</div>
+                <div class="text-xs font-bold tracking-widest uppercase text-brand-red">Unpad Statistics</div>
+            </div>
+
+            <h1 class="font-display text-4xl md:text-5xl lg:text-6xl leading-[0.9] text-brand-red mb-8">
+                COMPARISON OF ARIMA AND MACHINE LEARNING FOR BREN STOCK FORECASTING
+            </h1>
+            <p class="font-serif text-lg text-gray-700 italic mb-8">One-Step-Ahead Evaluation with Diebold-Mariano Test</p>
+
+            <div class="flex flex-wrap gap-4 text-xs font-bold uppercase tracking-widest border-t border-brand-red/30 pt-6">
+                <span class="bg-brand-red text-brand-offwhite px-3 py-1 rounded-full">Time Series</span>
+                <span class="bg-brand-red text-brand-offwhite px-3 py-1 rounded-full">ARIMA</span>
+                <span class="bg-brand-red text-brand-offwhite px-3 py-1 rounded-full">Machine Learning</span>
+                <span class="bg-brand-red text-brand-offwhite px-3 py-1 rounded-full">Diebold-Mariano</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-5xl mx-auto px-6 md:px-12 py-16">
+        
+        <!-- SECTION 1: INTRODUCTION -->
+        <section class="mb-16">
+            <div class="flex items-baseline gap-4 mb-6">
+                <span class="font-display text-5xl text-brand-red">01</span>
+                <h2 class="font-display text-2xl md:text-3xl text-brand-red border-b-2 border-brand-red pb-2 w-full">Introduction</h2>
+            </div>
+
+            <p class="font-serif text-md leading-relaxed mb-4 text-gray-800 text-justify drop-cap">
+                Stock price forecasting remains a debated problem between classical statistical and machine learning approaches. This study compares ARIMA with Random Forest, XGBoost, Support Vector Regression (SVR), and Neural Network Autoregression (NNAR) for forecasting the adjusted closing price of PT Barito Renewables Energy Tbk (BREN.JK). The stock experienced a sharp regime shift, testing the robustness of forecasting models against structural breaks.
+            </p>
+            <p class="font-serif text-md leading-relaxed mb-4 text-gray-800 text-justify">
+                To ensure a fair comparison, this research uses (i) one-step-ahead evaluation, (ii) log-return modeling for ML models, (iii) a naive benchmark (random walk), and (iv) the Diebold-Mariano test to formally assess accuracy differences.
+            </p>
+        </section>
+
+        <!-- SECTION 2: METHODOLOGY -->
+        <section class="mb-16">
+            <div class="flex items-baseline gap-4 mb-6">
+                <span class="font-display text-5xl text-brand-red">02</span>
+                <h2 class="font-display text-2xl md:text-3xl text-brand-red border-b-2 border-brand-red pb-2 w-full">Methodology</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="border-2 border-brand-red/20 p-5 rounded-2xl">
+                    <h4 class="font-display text-lg mb-2 text-brand-red">Data Split</h4>
+                    <ul class="text-sm font-serif text-gray-700 space-y-2">
+                        <li><strong>Total:</strong> 649 trading days (Jan 2, 2024 – Sep 30, 2026)</li>
+                        <li><strong>Train (80%):</strong> 519 days (Jan 2024 – Mar 2026)</li>
+                        <li><strong>Test (20%):</strong> 130 days (Mar – Sep 2026)</li>
+                    </ul>
+                </div>
+                <div class="border-2 border-brand-red/20 p-5 rounded-2xl">
+                    <h4 class="font-display text-lg mb-2 text-brand-red">Evaluation Schemes</h4>
+                    <ul class="text-sm font-serif text-gray-700 space-y-2">
+                        <li><strong>Fixed Parameter:</strong> Model estimated once on train data.</li>
+                        <li><strong>Walk-Forward:</strong> Model re-estimated every 5 trading days.</li>
+                        <li><strong>Benchmark:</strong> Naive forecast (random walk).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="font-serif font-bold text-lg mb-3 text-brand-red">ARIMA Model Selection</h3>
+            <p class="font-serif text-sm leading-relaxed mb-4 text-gray-800 text-justify">
+                The ADF test on the training data showed non-stationarity at level (p = 0.1932). After first differencing, the data became stationary (p < 0.01). Using <em>auto.arima</em> with BIC criteria, <strong>ARIMA(1,1,0)</strong> was selected. The Ljung-Box test on residuals (p = 0.8384) confirmed no autocorrelation.
+            </p>
+            <div class="math-block text-sm my-4 py-3">
+                ARIMA(1,1,0): Y_t = Y_{t-1} + 0.1476(Y_{t-1} - Y_{t-2}) + ε_t
+            </div>
+
+            <h3 class="font-serif font-bold text-lg mt-6 mb-3 text-brand-red">ML Hyperparameters (Grid Search)</h3>
+            <div class="scientific-table-container overflow-x-auto">
+                <table class="scientific-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Hyperparameters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">Random Forest</td>
+                            <td>500 trees; mtry = 3; min node size = 20</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">XGBoost</td>
+                            <td>Max depth = 2; 100 iterations; learning rate = 0.05</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">SVR (RBF)</td>
+                            <td>Cost = 0.1; Gamma = 0.1</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">NNAR</td>
+                            <td>5 lags; 5 hidden units; 20 initializations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION 3: RESULTS & VISUALIZATIONS -->
+        <section class="mb-16">
+            <div class="flex items-baseline gap-4 mb-6">
+                <span class="font-display text-5xl text-brand-red">03</span>
+                <h2 class="font-display text-2xl md:text-3xl text-brand-red border-b-2 border-brand-red pb-2 w-full">Results & Visualizations</h2>
+            </div>
+
+            <h3 class="font-serif font-bold text-lg mb-3 text-brand-red">3.1. Forecast Visualizations (Actual vs Prediction)</h3>
+            <p class="font-serif text-sm leading-relaxed mb-6 text-gray-800 text-justify">
+                The following charts focus specifically on the <strong>test set period (March – September 2026)</strong> to clearly compare the actual price movements against the one-step-ahead predictions. <span class="text-brand-red italic">(Click on any image to zoom in)</span>
+            </p>
+
+            <!-- FULL WIDTH FORECAST PLOTS -->
+            <div class="flex flex-col gap-10 mb-12">
+                
+                <!-- ARIMA Plot -->
+                <div class="slide-frame flex flex-col items-center justify-center cursor-pointer" onclick="openZoom('plot_arima.png')">
+                    <h4 class="font-display text-xl text-brand-red mb-4">ARIMA (RMSE: 221.98)</h4>
+                    <img src="plot_arima.png" alt="ARIMA Forecast" class="w-full max-w-4xl h-auto object-contain transition-transform hover:scale-[1.02]">
+                </div>
+
+                <!-- Random Forest Plot -->
+                <div class="slide-frame flex flex-col items-center justify-center cursor-pointer" onclick="openZoom('plot_rf.png')">
+                    <h4 class="font-display text-xl text-brand-red mb-4">Random Forest (RMSE: 240.81)</h4>
+                    <img src="plot_rf.png" alt="Random Forest Forecast" class="w-full max-w-4xl h-auto object-contain transition-transform hover:scale-[1.02]">
+                </div>
+
+                <!-- XGBoost Plot -->
+                <div class="slide-frame flex flex-col items-center justify-center cursor-pointer" onclick="openZoom('plot_xgb.png')">
+                    <h4 class="font-display text-xl text-brand-red mb-4">XGBoost (RMSE: 240.71)</h4>
+                    <img src="plot_xgb.png" alt="XGBoost Forecast" class="w-full max-w-4xl h-auto object-contain transition-transform hover:scale-[1.02]">
+                </div>
+
+                <!-- SVR Plot -->
+                <div class="slide-frame flex flex-col items-center justify-center cursor-pointer" onclick="openZoom('plot_svr.png')">
+                    <h4 class="font-display text-xl text-brand-red mb-4">SVR RBF (RMSE: 235.22)</h4>
+                    <img src="plot_svr.png" alt="SVR Forecast" class="w-full max-w-4xl h-auto object-contain transition-transform hover:scale-[1.02]">
+                </div>
+
+                <!-- NNAR Plot -->
+                <div class="slide-frame flex flex-col items-center justify-center cursor-pointer" onclick="openZoom('plot_nnar.png')">
+                    <h4 class="font-display text-xl text-brand-red mb-4">NNAR (RMSE: 230.11)</h4>
+                    <img src="plot_nnar.png" alt="NNAR Forecast" class="w-full max-w-4xl h-auto object-contain transition-transform hover:scale-[1.02]">
+                </div>
+
+            </div>
+
+            <h3 class="font-serif font-bold text-lg mb-3 text-brand-red">3.2. Accuracy & Diebold-Mariano Test</h3>
+            <p class="font-serif text-sm leading-relaxed mb-4 text-gray-800 text-justify">
+                ARIMA(1,1,0) was the most accurate model (RMSE 221.98; MAPE 3.85%) and the <strong>only</strong> model significantly better than the naive forecast under both schemes (p = 0.0135). ML models performed around the naive benchmark, with small differences (~10 RMSE points).
+            </p>
+
+            <!-- CHART 1: RMSE Bar Chart -->
+            <div class="chart-container">
+                <h4 class="font-display text-center mb-4 text-brand-red text-sm">RMSE Comparison (Fixed Parameter)</h4>
+                <canvas id="rmseBarChart"></canvas>
+            </div>
+
+            <!-- CHART 2: Diebold-Mariano vs ARIMA -->
+            <div class="chart-container mt-8">
+                <h4 class="font-display text-center mb-4 text-brand-red text-sm">Diebold-Mariano Statistic (ARIMA vs ML)</h4>
+                <canvas id="dmBarChart"></canvas>
+                <p class="text-center text-xs text-gray-500 mt-2 font-mono">Negative DM = ARIMA is better. Red line = 5% significance threshold (-1.96).</p>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCLUSION -->
+        <section class="mb-16">
+            <div class="flex items-baseline gap-4 mb-6">
+                <span class="font-display text-5xl text-brand-red">04</span>
+                <h2 class="font-display text-2xl md:text-3xl text-brand-red border-b-2 border-brand-red pb-2 w-full">Conclusion</h2>
+            </div>
+
+            <ul class="custom-list font-serif text-sm text-gray-800">
+                <li><strong>ARIMA(1,1,0)</strong> is the most accurate model (RMSE 221.98; MAPE 3.85%) and the only one significantly better than the naive forecast.</li>
+                <li>ARIMA significantly outperforms Random Forest, XGBoost, and SVR on both schemes, and NNAR on the walk-forward scheme (weak evidence).</li>
+                <li>No ML model consistently performs best: NNAR is best under fixed parameters, while SVR and XGBoost are nearly tied under walk-forward.</li>
+                <li>Periodic re-estimation does not meaningfully improve ML accuracy. The complexity of ML models does not guarantee higher accuracy for stocks with structural breaks.</li>
+            </ul>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="border-t-4 border-brand-red pt-6 mt-8 text-center">
+            <p class="font-display text-lg text-brand-red mb-1">STATISTICS RESEARCH PAPER</p>
+            <p class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Seminar Nasional Statistika XIV (2026) — Unpad</p>
+        </footer>
+
+    </main>
+
+    <!-- MODAL ZOOM (Tersembunyi secara default) -->
+    <div id="zoomModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer" onclick="closeZoom()">
+        <div class="relative max-w-7xl w-full flex justify-center">
+            <button class="absolute -top-12 right-0 text-white text-4xl hover:text-brand-red transition-colors font-bold">&times;</button>
+            <img id="zoomedImage" src="" alt="Zoomed Chart" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR CHARTS & ZOOM -->
+    <script>
+        // Set default font for Chart.js
+        Chart.defaults.font.family = "'Space Mono', monospace";
+        Chart.defaults.color = '#1A1A1A';
+
+        // --- FUNGSI UNTUK ZOOM GAMBAR ---
+        function openZoom(imageSrc) {
+            const modal = document.getElementById('zoomModal');
+            const img = document.getElementById('zoomedImage');
+            img.src = imageSrc;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Mencegah scroll di background
+        }
+
+        function closeZoom() {
+            const modal = document.getElementById('zoomModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- RENDER RMSE CHART ---
+        new Chart(document.getElementById('rmseBarChart'), {
+            type: 'bar',
+            data: {
+                labels: ['ARIMA', 'NNAR', 'Naive', 'SVR', 'XGBoost', 'Random Forest'],
+                datasets: [{
+                    label: 'RMSE',
+                    data: [221.98, 230.11, 232.81, 235.21, 240.71, 240.81],
+                    backgroundColor: [
+                        '#D32F2F', // ARIMA
+                        '#EAEAEA', // NNAR
+                        '#1A1A1A', // Naive
+                        '#EAEAEA', // SVR
+                        '#EAEAEA', // XGBoost
+                        '#EAEAEA'  // RF
+                    ],
+                    borderColor: '#1A1A1A',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false, min: 210, title: { display: true, text: 'RMSE (Rp)' } }, x: { grid: { display: false } } }
+            }
+        });
+
+        // --- RENDER DIEBOLD-MARIANO CHART ---
+        new Chart(document.getElementById('dmBarChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Random Forest', 'XGBoost', 'SVR', 'NNAR'],
+                datasets: [{
+                    label: 'DM Statistic',
+                    data: [-3.115, -2.811, -2.850, -1.313],
+                    backgroundColor: [
+                        '#D32F2F', 
+                        '#D32F2F', 
+                        '#D32F2F', 
+                        '#EAEAEA' // NNAR not significant at 5%
+                    ],
+                    borderColor: '#1A1A1A',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: 'DM Statistic (Negative = ARIMA is Better)' }, grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } }
+            }
+        });
+    </script>
+</body>
+</html>
